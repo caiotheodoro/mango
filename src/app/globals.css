@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* Brazilian Mango Expert — Editorial / Tropical Warmth
+   Purpose: Q&A about Brazilian mangos. Tone: editorial, warm, confident.
+   One bold accent (terracotta), warm paper neutrals, no purple. */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: #faf8f5;
+  --color-foreground: #1c1917;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1917;
+  --color-primary: #1c1917;
+  --color-primary-foreground: #faf8f5;
+  --color-secondary: #f5f1eb;
+  --color-muted: #e7e5e4;
+  --color-muted-foreground: #78716c;
+  --color-accent: #fef3c7;
+  --color-accent-foreground: #1c1917;
+  --color-border: #e7e5e4;
+  --color-input: #d6d3d1;
+  --color-ring: #b45309;
+  --color-destructive: #b91c1c;
+  --color-success: #15803d;
+  --radius: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.25rem;
+
+  /* Editorial palette */
+  --color-page-bg: #faf8f5;
+  --color-paper: #f5f1eb;
+  --color-ink: #1c1917;
+  --color-ink-muted: #78716c;
+  --color-ink-soft: #a8a29e;
+  --color-accent-terracotta: #b45309;
+  --color-accent-terracotta-soft: #ea580c;
+  --color-user-bg: #fff7ed;
+  --color-user-ink: #9a3412;
+  --color-input-border: #d6d3d1;
+  --color-placeholder: #a8a29e;
+  --color-send-btn: #b45309;
+  --color-sidebar-bg: #f0ebe3;
+  --color-sidebar-border: #e7e5e4;
+  --font-display: var(--font-instrument-serif), Georgia, serif;
+  --font-body: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: #faf8f5;
+  --foreground: #1c1917;
+  --border: #e7e5e4;
+  --destructive: #b91c1c;
+  --success: #15803d;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    font-family: var(--font-body);
+    @apply text-foreground antialiased;
+    min-height: 100vh;
+    background-color: var(--color-page-bg);
+  }
+  /* Grain overlay for depth — subtle paper texture */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Typography */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* High-impact keyframes */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-1%, -1%); }
+  20% { transform: translate(1%, 1%); }
+  30% { transform: translate(-1%, 1%); }
+  40% { transform: translate(1%, -1%); }
+  50% { transform: translate(-1%, 0); }
+  60% { transform: translate(1%, 0); }
+  70% { transform: translate(0, -1%); }
+  80% { transform: translate(0, 1%); }
+  90% { transform: translate(-1%, -1%); }
+}
+
+@layer utilities {
+  .animate-fade-slide-up {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .shadow-editorial {
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04), 0 4px 12px rgba(28, 25, 23, 0.06);
+  }
+  .shadow-editorial-lg {
+    box-shadow: 0 4px 6px -1px rgba(28, 25, 23, 0.05), 0 10px 30px -4px rgba(28, 25, 23, 0.08);
+  }
+}
+
+/* Hide scrollbars but keep scroll */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Focus: warm accent ring */
+*:focus-visible {
+  outline: none;
+}
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-accent-terracotta);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+textarea:focus,
+input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--color-page-bg), 0 0 0 4px var(--color-accent-terracotta);
+}
