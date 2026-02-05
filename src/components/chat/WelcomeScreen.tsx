@@ -43,7 +43,7 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
         <p className="text-[var(--color-ink-muted)] text-base md:text-lg max-w-xl mx-auto">
           Varieties, seasons, exports, nutrition — with sources and images when you need them.
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
           {suggestedQuestions.map((question, index) => (
             <motion.button
               key={question}
@@ -56,7 +56,7 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
                 ease: [0.22, 1, 0.36, 1],
               }}
               onClick={() => onSuggestionClick(question)}
-              className="rounded-2xl px-5 py-3.5 text-left text-base font-medium cursor-pointer transition-all border border-[var(--color-input-border)] bg-[var(--color-page-bg)] text-[var(--color-ink)] hover:border-[var(--color-accent-terracotta)]/40 hover:bg-[var(--color-user-bg)] hover:text-[var(--color-user-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-terracotta)] focus:ring-offset-2 focus:ring-offset-[var(--color-page-bg)] active:scale-[0.98]"
+              className="h-full w-full rounded-2xl px-5 py-3.5 text-left text-base font-medium cursor-pointer transition-all border border-[var(--color-input-border)] bg-[var(--color-page-bg)] text-[var(--color-ink)] hover:border-[var(--color-accent-terracotta)]/40 hover:bg-[var(--color-user-bg)] hover:text-[var(--color-user-ink)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-terracotta)] focus:ring-offset-2 focus:ring-offset-[var(--color-page-bg)] active:scale-[0.98]"
             >
               {question}
             </motion.button>

@@ -24,12 +24,12 @@ export function ImageGrid({ images }: ImageGridProps) {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-row flex-nowrap gap-3 mt-2 w-full h-52"
+        className="grid grid-cols-2 md:flex md:flex-row md:flex-nowrap gap-3 mt-2 w-full md:h-52"
       >
         {images.map((image, index) => (
           <Card
             key={index}
-            className="flex-1 min-w-0 h-full overflow-hidden cursor-pointer group relative border border-[var(--color-input-border)] rounded-xl shadow-editorial hover:border-[var(--color-accent-terracotta)]/30 transition-colors"
+            className="md:flex-1 min-w-0 h-32 md:h-full overflow-hidden cursor-pointer group relative border border-[var(--color-input-border)] rounded-xl shadow-editorial hover:border-[var(--color-accent-terracotta)]/30 transition-colors"
             onClick={() => setSelectedImage(image)}
           >
             <Image

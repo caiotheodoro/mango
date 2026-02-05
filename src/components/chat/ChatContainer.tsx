@@ -105,7 +105,7 @@ export function ChatContainer() {
   const showWelcome = messages.length === 0 && !isLoading && isInitialized;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[var(--color-page-bg)]">
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-[var(--color-page-bg)]">
       {/* Sidebar Sheet */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent
