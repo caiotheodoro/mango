@@ -1,5 +1,6 @@
 import { Index } from "@upstash/vector";
 import { API_LIMITS } from "@/lib/constants";
+import { getRequiredEnv } from "@/lib/env";
 import type { KnowledgeMetadata, SearchResult, KnowledgeCategory } from "@/lib/types";
 
 // Re-export types for convenience
@@ -7,8 +8,8 @@ export type { KnowledgeMetadata, SearchResult, KnowledgeCategory };
 
 // Initialize Upstash Vector client
 const vectorIndex = new Index({
-  url: process.env.UPSTASH_VECTOR_REST_URL!,
-  token: process.env.UPSTASH_VECTOR_REST_TOKEN!,
+  url: getRequiredEnv("UPSTASH_VECTOR_REST_URL"),
+  token: getRequiredEnv("UPSTASH_VECTOR_REST_TOKEN"),
 });
 
 export interface SearchOptions {
@@ -16,6 +17,15 @@ export interface SearchOptions {
   limit?: number;
   minScore?: number;
 }
+
+const CATEGORY_ALLOWLIST: KnowledgeCategory[] = [
+  "varieties",
+  "nutrition",
+  "seasons",
+  "exports",
+  "cultivation",
+  "general",
+];
 
 /**
  * Search the knowledge base for relevant information
@@ -32,7 +42,9 @@ export async function searchKnowledge(
 
   try {
     // Build filter if category specified
-    const filter = category ? `category = '${category}'` : undefined;
+    const normalizedCategory =
+      category && CATEGORY_ALLOWLIST.includes(category) ? category : undefined;
+    const filter = normalizedCategory ? `category = "${normalizedCategory}"` : undefined;
 
     // Query the vector database
     const results = await vectorIndex.query({

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { z } from "zod";
 import {
   getSessionHistory,
   createSession,
@@ -14,6 +15,10 @@ import {
 import { getSession } from "@/lib/chat-history/store";
 
 export const runtime = "edge";
+
+const deleteSessionSchema = z.object({
+  sessionId: z.string().min(1),
+});
 
 // GET: Fetch chat history for visitor
 export async function GET() {
@@ -48,11 +53,19 @@ export async function DELETE(request: Request) {
   try {
     const cookieStore = await cookies();
     const visitorId = await getOrCreateVisitorId(cookieStore);
-    const { sessionId } = await request.json();
+    let requestBody: unknown;
+    try {
+      requestBody = await request.json();
+    } catch {
+      return validationError("Invalid JSON body");
+    }
 
-    if (!sessionId) {
+    const parsed = deleteSessionSchema.safeParse(requestBody);
+    if (!parsed.success) {
       return validationError("Session ID is required");
     }
+
+    const { sessionId } = parsed.data;
 
     const session = await getSession(sessionId);
     if (!session) {

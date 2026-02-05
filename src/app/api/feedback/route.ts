@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { z } from "zod";
 import { redis } from "@/lib/db/redis";
 import { REDIS_KEYS, REDIS_TTL } from "@/lib/constants";
 import { getOrCreateVisitorId } from "@/lib/chat-history/visitor";
@@ -13,12 +14,12 @@ import type { Feedback } from "@/lib/types";
 
 export const runtime = "edge";
 
-interface FeedbackPayload {
-  messageId: string;
-  sessionId: string;
-  rating: "positive" | "negative";
-  comment?: string;
-}
+const feedbackSchema = z.object({
+  messageId: z.string().min(1),
+  sessionId: z.string().min(1),
+  rating: z.enum(["positive", "negative"]),
+  comment: z.string().optional(),
+});
 
 // POST: Submit feedback for a message
 export async function POST(request: Request) {
@@ -26,12 +27,19 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const visitorId = await getOrCreateVisitorId(cookieStore);
 
-    const payload: FeedbackPayload = await request.json();
-    const { messageId, sessionId, rating, comment } = payload;
+    let requestBody: unknown;
+    try {
+      requestBody = await request.json();
+    } catch {
+      return validationError("Invalid JSON body");
+    }
 
-    if (!messageId || !sessionId || !rating) {
+    const parsed = feedbackSchema.safeParse(requestBody);
+    if (!parsed.success) {
       return validationError("Missing required fields: messageId, sessionId, rating");
     }
+
+    const { messageId, sessionId, rating, comment } = parsed.data;
 
     const session = await getSession(sessionId);
     if (!session) {

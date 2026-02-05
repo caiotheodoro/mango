@@ -42,7 +42,17 @@ function getTransport(): ChatTransport<UIMessage> {
     transportInstance = new DefaultChatTransport({
       api: "/api/chat",
       fetch: async (url, init) => {
-        const originalBody = JSON.parse((init?.body as string) || "{}");
+        let originalBody: Record<string, unknown> = {};
+        if (init?.body && typeof init.body === "string") {
+          try {
+            const parsed = JSON.parse(init.body);
+            if (parsed && typeof parsed === "object") {
+              originalBody = parsed as Record<string, unknown>;
+            }
+          } catch {
+            originalBody = {};
+          }
+        }
         const newBody = {
           ...originalBody,
           sessionId: dynamicValues.sessionId,

@@ -1,7 +1,10 @@
+import { cookies } from "next/headers";
 import { getSession, getMessages } from "@/lib/chat-history/store";
+import { getOrCreateVisitorId } from "@/lib/chat-history/visitor";
 import {
   successResponse,
   notFoundError,
+  errorResponse,
   handleApiError,
 } from "@/lib/api/errors";
 
@@ -19,6 +22,15 @@ export async function GET(
 
     if (!session) {
       return notFoundError("Session");
+    }
+
+    const cookieStore = await cookies();
+    const visitorId = await getOrCreateVisitorId(cookieStore);
+    if (session.visitorId !== visitorId) {
+      return errorResponse("Not authorized to access this session", {
+        status: 403,
+        code: "UNAUTHORIZED",
+      });
     }
 
     const messages = await getMessages(sessionId);

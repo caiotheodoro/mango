@@ -16,6 +16,21 @@ const imageCache = new Map<
   { data: UnsplashImage[]; timestamp: number }
 >();
 const CACHE_TTL = REDIS_TTL.IMAGE_CACHE * 1000; // Convert to ms
+const MAX_CACHE_ENTRIES = 100;
+
+function pruneCache() {
+  if (imageCache.size <= MAX_CACHE_ENTRIES) return;
+  const entries = Array.from(imageCache.entries()).sort(
+    (a, b) => a[1].timestamp - b[1].timestamp
+  );
+  const overflow = imageCache.size - MAX_CACHE_ENTRIES;
+  for (let i = 0; i < overflow; i++) {
+    const key = entries[i]?.[0];
+    if (key) {
+      imageCache.delete(key);
+    }
+  }
+}
 
 /**
  * Search Unsplash for mango images
@@ -66,6 +81,7 @@ export async function getImages(
 
     // Cache results
     imageCache.set(cacheKey, { data: images, timestamp: Date.now() });
+    pruneCache();
 
     return images;
   } catch (error) {

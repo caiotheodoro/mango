@@ -51,8 +51,8 @@ export default async function proxy(request: NextRequest) {
     });
   }
 
-  // Apply rate limiting to chat API
-  if (request.nextUrl.pathname.startsWith("/api/chat")) {
+  // Apply rate limiting to API routes
+  if (request.nextUrl.pathname.startsWith("/api/")) {
     const ip = getClientIp(request);
     const identifier = visitorId || ip || "anonymous";
 

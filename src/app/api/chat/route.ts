@@ -1,17 +1,32 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { streamText, convertToModelMessages, stepCountIs, type UIMessage } from "ai";
+import { z } from "zod";
 import { userWantsMangoImages } from "@/lib/ai/intent";
 import { SYSTEM_PROMPT } from "@/lib/ai/prompts";
 import { chatTools } from "@/lib/ai/tools";
 import { validateCitations, logCitationWarnings } from "@/lib/ai/validation";
-import { addMessage, getOrCreateSessionForConversation, createSession } from "@/lib/chat-history/store";
+import {
+  addMessage,
+  getOrCreateSessionForConversation,
+  createSession,
+  getSession,
+} from "@/lib/chat-history/store";
 import { getOrCreateVisitorId } from "@/lib/chat-history/visitor";
 import { AI_CONFIG } from "@/lib/constants";
+import { errorResponse, validationError } from "@/lib/api/errors";
 import { cookies } from "next/headers";
 
 // Segment configs must be static values (not references)
 export const runtime = "edge";
 export const maxDuration = 60;
+
+const chatRequestSchema = z
+  .object({
+    messages: z.array(z.unknown()),
+    sessionId: z.string().nullable().optional(),
+    forceNewSession: z.boolean().optional(),
+  })
+  .passthrough();
 
 /**
  * Extract text content from UIMessage parts
@@ -26,17 +41,26 @@ function extractTextFromParts(parts: UIMessage["parts"]): string {
 export async function POST(request: Request) {
   try {
     // Parse request - AI SDK sends UIMessage format with parts
-    const { messages, sessionId: providedSessionId, forceNewSession } = (await request.json()) as {
+    let requestBody: unknown;
+    try {
+      requestBody = await request.json();
+    } catch {
+      return validationError("Invalid JSON body");
+    }
+
+    const parsed = chatRequestSchema.safeParse(requestBody);
+    if (!parsed.success) {
+      return validationError("Invalid request payload");
+    }
+
+    const { messages, sessionId: providedSessionId, forceNewSession } = parsed.data as {
       messages: UIMessage[];
       sessionId?: string;
       forceNewSession?: boolean;
     };
 
-    if (!messages || !Array.isArray(messages)) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Messages array is required", code: "BAD_REQUEST" }),
-        { status: 400 }
-      );
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return validationError("Messages array is required");
     }
 
     // Get or create visitor/session
@@ -45,7 +69,18 @@ export async function POST(request: Request) {
 
     // Use provided sessionId, or create new/reuse based on forceNewSession flag
     let sessionId = providedSessionId;
-    if (!sessionId) {
+    if (sessionId) {
+      const existingSession = await getSession(sessionId);
+      if (!existingSession) {
+        return errorResponse("Session not found", { status: 404, code: "NOT_FOUND" });
+      }
+      if (existingSession.visitorId !== visitorId) {
+        return errorResponse("Not authorized to use this session", {
+          status: 403,
+          code: "UNAUTHORIZED",
+        });
+      }
+    } else {
       // If user explicitly requested a new chat, always create fresh session
       if (forceNewSession) {
         const session = await createSession(visitorId);
