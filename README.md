@@ -2,6 +2,10 @@
 
 AI-powered chatbot specialized in Brazilian mangos. Built with RAG (Retrieval-Augmented Generation) for accurate, citation-backed responses about varieties, seasons, nutrition, exports, and cultivation.
 
+## Demo:
+- https://screen.studio/share/R1xsVWos
+- https://mango.avenza.cloud/
+
 ## Capabilities
 
 | Category | Feature | Description |
