@@ -10,7 +10,7 @@ AI-powered chatbot specialized in Brazilian mangos. Built with RAG (Retrieval-Au
 
 | Category | Feature | Description |
 |----------|---------|-------------|
-| **Knowledge** | RAG Search | Semantic search across 5 curated knowledge domains |
+| **Knowledge** | RAG Search | Semantic search across 5 curated knowledge domains; falls back to web search (Firecrawl) when no KB results |
 | | Varieties | Tommy Atkins, Palmer, Haden, Kent, Keitt, Rosa, Espada, and more |
 | | Nutrition | Vitamins, minerals, health benefits, serving sizes |
 | | Seasons | Harvest calendars, peak periods, regional timing |
@@ -36,6 +36,7 @@ AI-powered chatbot specialized in Brazilian mangos. Built with RAG (Retrieval-Au
 | Vector DB | Upstash Vector | Serverless, no cold starts, semantic search |
 | Cache | Upstash Redis | Session storage, rate limiting, serverless |
 | Images | Unsplash API | High-quality, properly licensed images |
+| Web search | Firecrawl (optional) | Fallback when knowledge base has no answer |
 | Validation | Zod | Runtime type safety for tool inputs |
 
 ## Architecture

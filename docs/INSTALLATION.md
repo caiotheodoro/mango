@@ -39,6 +39,7 @@ cp .env.example .env.local
 | Variable | Source | Description |
 |----------|--------|-------------|
 | `UNSPLASH_ACCESS_KEY` | [Unsplash Developers](https://unsplash.com/developers) | For mango images (falls back gracefully) |
+| `FIRECRAWL_API_KEY` | [Firecrawl](https://firecrawl.dev) | Enables web search when the knowledge base has no answer (optional) |
 
 ### Example `.env.local`
 
@@ -56,6 +57,9 @@ UPSTASH_VECTOR_REST_TOKEN=Axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 # Unsplash (Optional)
 UNSPLASH_ACCESS_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Firecrawl (Optional - web search when KB has no results)
+# FIRECRAWL_API_KEY=fc-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## 3. Upstash Setup
