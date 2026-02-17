@@ -36,7 +36,7 @@ export const API_LIMITS = {
   MAX_SEARCH_RESULTS: 5,
   MAX_WEB_SEARCH_RESULTS: 5,
   // BGE embeddings return scores in 0.01-0.05 range for good matches
-  MIN_SEARCH_SCORE: 0.01,
+  MIN_SEARCH_SCORE: 0.05,
 } as const;
 
 // ---------- AI Configuration ----------
