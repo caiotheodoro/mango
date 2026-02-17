@@ -16,6 +16,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.36",
     "@ai-sdk/react": "^3.0.72",
+    "@mendable/firecrawl-js": "^4.13.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
     "@upstash/vector": "^1.2.2",
