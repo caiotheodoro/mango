@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { searchKnowledge } from "@/lib/knowledge/search";
+import { searchWeb } from "@/lib/search/firecrawl";
 import { getImages } from "@/lib/images/unsplash";
 
 // Tool definitions for the chatbot
@@ -24,6 +25,35 @@ export const chatTools = {
           confidence: r.score > 0.8 ? "HIGH" : r.score > 0.5 ? "MEDIUM" : "LOW",
           score: r.score,
           dataDate: r.metadata.dataDate || "2024",
+        })),
+        totalResults: results.length,
+      };
+    },
+  }),
+
+  searchWeb: tool({
+    description:
+      "Search the web for information when the knowledge base has no data on the topic. Use this ONLY after you have called searchKnowledge and it returned no results (totalResults === 0) for a factual question. Do not use for image requests or off-topic questions.",
+    inputSchema: z.object({
+      query: z.string().describe("The search query - same or refined from the user question"),
+      limit: z.number().min(1).max(5).optional().describe("Max number of results (default 5)"),
+    }),
+    execute: async ({ query, limit }) => {
+      const results = await searchWeb(query, { limit });
+      if (results.length === 0 && !process.env.FIRECRAWL_API_KEY?.trim()) {
+        return {
+          success: false,
+          message: "Web search is not configured. Answer from knowledge base only.",
+          results: [],
+          totalResults: 0,
+        };
+      }
+      return {
+        success: true,
+        results: results.map((r) => ({
+          content: r.content ?? r.title,
+          source: r.title,
+          sourceUrl: r.url || null,
         })),
         totalResults: results.length,
       };

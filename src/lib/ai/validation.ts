@@ -27,12 +27,16 @@ export function extractUrls(text: string): string[] {
  * Validate that all citations in the response come from tool results
  *
  * @param responseText - The AI's response text
- * @param toolResults - Array of tool results that may contain sourceUrl
+ * @param toolResults - Array of tool results that may contain sourceUrl (searchKnowledge, searchWeb, etc.)
  * @returns Validation result with lists of known and unknown URLs
  */
 export function validateCitations(
   responseText: string,
-  toolResults: Array<{ sourceUrl?: string; output?: { results?: Array<{ sourceUrl?: string }> } }>
+  toolResults: Array<{
+    sourceUrl?: string;
+    output?: { results?: Array<{ sourceUrl?: string | null }> };
+    results?: Array<{ sourceUrl?: string | null }>;
+  }>
 ): ValidationResult {
   // Extract URLs from response
   const citedUrls = extractUrls(responseText);
@@ -45,10 +49,11 @@ export function validateCitations(
     if (result.sourceUrl) {
       knownUrls.add(result.sourceUrl);
     }
-    // Nested in output.results (searchKnowledge format)
-    if (result.output?.results) {
-      for (const r of result.output.results) {
-        if (r.sourceUrl) {
+    // Nested in output.results (some SDK shapes)
+    const resultsArray = result.output?.results ?? result.results;
+    if (resultsArray && Array.isArray(resultsArray)) {
+      for (const r of resultsArray) {
+        if (r?.sourceUrl) {
           knownUrls.add(r.sourceUrl);
         }
       }
