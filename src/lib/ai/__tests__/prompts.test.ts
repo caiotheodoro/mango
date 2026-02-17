@@ -17,12 +17,13 @@ describe("System Prompts", () => {
 
     it("should include tool usage rules", () => {
       expect(SYSTEM_PROMPT).toContain("searchKnowledge");
+      expect(SYSTEM_PROMPT).toContain("searchWeb");
       expect(SYSTEM_PROMPT).toContain("getMangoImages");
     });
 
     it("should include citation instructions", () => {
       expect(SYSTEM_PROMPT).toContain("cite sources");
-      expect(SYSTEM_PROMPT).toContain("ONLY cite sources that were returned by searchKnowledge");
+      expect(SYSTEM_PROMPT).toContain("searchKnowledge or searchWeb");
     });
 
     it("should define scope boundaries", () => {
